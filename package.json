@@ -1,0 +1,14 @@
+{
+  "name": "antigravity-gemini-theme",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gemini-inspired appearance for Antigravity 2.19.1 on Windows",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "theme:status": "node theme-cli.cjs status",
+    "theme:install": "node theme-cli.cjs install",
+    "theme:restore": "node theme-cli.cjs restore",
+    "test": "node --test"
+  }
+}

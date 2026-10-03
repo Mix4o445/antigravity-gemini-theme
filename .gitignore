@@ -1,0 +1,7 @@
+node_modules/
+*.asar
+*.gemini-theme-backup
+*.gemini-theme.json
+*.tmp
+.DS_Store
+Thumbs.db
