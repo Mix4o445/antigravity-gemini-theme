@@ -6,9 +6,13 @@ A Gemini-inspired dark theme for Antigravity: a rounded composer, compact model 
 
 This is an **unofficial local theme installer** that modifies the app's Electron preload. It is not a Marketplace extension. It changes appearance and keeps Antigravity's model selection, reasoning controls, terminals, file review, and other native actions. Google and Antigravity do not sponsor this project.
 
-![Static preview of the theme with example content](docs/preview.png)
+![Actual Antigravity app with the theme applied](docs/preview.png)
 
-The preview uses example content and the theme's CSS. It is a static illustration, not a running Antigravity session.
+Actual screenshots of the themed Antigravity 2.19.1 app. The sidebar is collapsed and the project selector is hidden for privacy.
+
+![Native Antigravity model picker with the theme applied](docs/model-picker.png)
+
+The model picker is Antigravity's real menu. Available models depend on your account and the app's current offerings.
 
 ## Install
 

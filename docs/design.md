@@ -23,4 +23,4 @@ The compact model label retains the full native accessible label and tooltip. Th
 
 The theme annotates existing DOM nodes, adds a stylesheet, a greeting, a brand label, model descriptions, and the small AI notice. A newly rendered running-task panel starts collapsed using its native disclosure button. It does not alter requests, authentication, files, model routing, or terminal execution.
 
-The preview HTML is a separate static example. It contains no user history or source code and does not implement the app's controls.
+The README images are captures of the actual themed Antigravity 2.19.1 app, including its native model picker. The navigation sidebar is collapsed and the project selector is hidden during capture to protect private project details. No sample conversations or replacement controls are rendered for the screenshots.
