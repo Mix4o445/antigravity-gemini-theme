@@ -8,11 +8,20 @@ This is an **unofficial local theme installer** that modifies the app's Electron
 
 ![Actual Antigravity app with the theme applied](docs/preview.png)
 
-Actual screenshots of the themed Antigravity 2.19.1 app. The sidebar is collapsed and the project selector is hidden for privacy.
+Actual screenshots of the themed Antigravity 2.19.1 app. The sidebar is collapsed for privacy.
 
 ![Native Antigravity model picker with the theme applied](docs/model-picker.png)
 
 The model picker is Antigravity's real menu. Available models depend on your account and the app's current offerings.
+
+<details>
+<summary>See native action and mention menus</summary>
+
+![Native slash-command menu with the theme applied](docs/actions.png)
+
+![Native mention menu with the theme applied](docs/mentions.png)
+
+</details>
 
 ## Install
 
@@ -66,6 +75,8 @@ Keep them until you have restored or reinstalled Antigravity. Restore retains th
 
 - Dark surfaces, Google Sans Flex typography, and pale blue focus accents.
 - A single rounded input bar with native context, model, microphone, and send controls.
+- Project and environment selection under **+ → Workspace**, keeping extra rows off the resting composer.
+- Roomier native `/` and `@` suggestions with readable descriptions and a scrollable menu that fits above the composer.
 - Compact model labels, a selected checkmark, and native reasoning submenus.
 - Rounded user messages, readable replies, and feedback actions aligned beneath them.
 - Coding activity disclosures and a task summary that starts collapsed; expand it to inspect running tasks.
@@ -73,6 +84,8 @@ Keep them until you have restored or reinstalled Antigravity. Restore retains th
 - Header spacing that keeps branding, sidebar toggle, history arrows, and breadcrumbs aligned.
 
 The available models and reasoning options come from Antigravity. This theme does not add models or a reasoning slider.
+
+To change the project or local/cloud environment, open **+**, choose **Workspace**, and use the original project or environment selector. The added Workspace entry works with arrow keys and Enter; Escape closes the settings surface. Native media, mention, action, and browser entries stay available under **+**.
 
 ## Updates and troubleshooting
 

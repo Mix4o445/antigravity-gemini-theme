@@ -1,8 +1,96 @@
 // Small, idempotent DOM annotations; all Antigravity controls stay native.
 (() => {
-  if (globalThis.__antigravityGeminiStyleV2) return;
-  globalThis.__antigravityGeminiStyleV2 = true;
+  if (globalThis.__antigravityGeminiStyleV3) return;
+  globalThis.__antigravityGeminiStyleV3 = true;
   const css = __GEMINI_CSS__;
+  const workspace = { open: false, plus: null, project: null, environment: null, panel: null };
+  function closeWorkspace(restoreFocus = false) {
+    // Dismiss child popups through their native handler before hiding the anchor.
+    // Otherwise Base UI can leave an invisible modal backdrop over the editor.
+    for (const root of [workspace.project, workspace.environment]) {
+      const trigger = root?.querySelector('[aria-expanded="true"][aria-controls]');
+      const popup = trigger && document.getElementById(trigger.getAttribute('aria-controls'));
+      popup?.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', code: 'Escape', bubbles: true, cancelable: true}));
+    }
+    workspace.open = false;
+    workspace.panel?.remove();
+    workspace.panel = null;
+    document.documentElement.removeAttribute('data-gemini-workspace-open');
+    if (restoreFocus) workspace.plus?.focus();
+  }
+  function positionWorkspace() {
+    if (!workspace.open || !workspace.plus?.isConnected) return;
+    const rect = workspace.plus.getBoundingClientRect();
+    const height = workspace.project ? 164 : 112;
+    const width = Math.min(320, innerWidth - 24);
+    const left = Math.max(12, Math.min(rect.left - 8, innerWidth - width - 12));
+    const top = rect.bottom + height + 16 <= innerHeight ? rect.bottom + 16 : Math.max(12, rect.top - height - 16);
+    const root = document.documentElement;
+    for (const [key, value] of Object.entries({left, top, width, height})) root.style.setProperty('--gemini-workspace-' + key, value + 'px');
+  }
+  function openWorkspace() {
+    if (workspace.plus?.getAttribute('aria-expanded') === 'true') {
+      document.getElementById(workspace.plus.getAttribute('aria-controls'))?.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', code: 'Escape', bubbles: true, cancelable: true}));
+    }
+    closeWorkspace();
+    workspace.open = true;
+    const panel = document.createElement('div');
+    panel.className = 'gemini-workspace-panel';
+    panel.setAttribute('role', 'group');
+    panel.setAttribute('aria-label', 'Workspace');
+    panel.setAttribute('aria-owns', [workspace.project?.id, workspace.environment?.id].filter(Boolean).join(' '));
+    const heading = document.createElement('span');
+    heading.textContent = 'Workspace';
+    panel.append(heading);
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'gemini-workspace-close';
+    close.setAttribute('aria-label', 'Close workspace');
+    close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+    close.addEventListener('click', () => closeWorkspace(true));
+    panel.append(close);
+    workspace.panel = panel;
+    let mount = workspace.project || workspace.environment;
+    const other = workspace.environment || workspace.project;
+    while (mount && (!mount.contains(other) || mount === other)) mount = mount.parentElement;
+    (mount || document.body).append(panel);
+    mark(document.documentElement, 'data-gemini-workspace-open', workspace.project ? 'project-and-environment' : 'environment');
+    positionWorkspace();
+    (workspace.project?.querySelector('button') || workspace.environment?.querySelector('button') || close).focus();
+  }
+  function annotateWorkspace(plus, project, environment) {
+    if (workspace.open && (workspace.plus !== plus || workspace.project !== project || workspace.environment !== environment)) closeWorkspace();
+    workspace.plus = plus;
+    workspace.project = project;
+    workspace.environment = environment;
+    // Native focus restoration can reopen a popup after its anchor is hidden.
+    // Keep the native modal state in sync with Workspace visibility.
+    if (!document.documentElement.hasAttribute('data-gemini-workspace-open') &&
+        (project?.querySelector('[aria-expanded="true"]') || environment?.querySelector('[aria-expanded="true"]'))) {
+      closeWorkspace();
+    }
+    if (project) {
+      mark(project, 'data-gemini-workspace-project');
+      if (!project.id) project.id = 'gemini-workspace-project';
+    }
+    if (environment) {
+      mark(environment, 'data-gemini-workspace-environment');
+      if (!environment.id) environment.id = 'gemini-workspace-environment';
+      mark(environment.closest('.h-fit'), 'data-gemini-runtime-footer');
+    }
+    const menu = plus?.getAttribute('aria-expanded') === 'true' ? document.getElementById(plus.getAttribute('aria-controls')) : null;
+    if (!menu || (!project && !environment)) return;
+    mark(menu, 'data-gemini-context-menu');
+    const existing = menu.querySelector('.gemini-workspace-menu-item');
+    if (existing) { existing.removeAttribute('aria-haspopup'); return; }
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'gemini-workspace-menu-item';
+    row.setAttribute('role', 'menuitem');
+    row.setAttribute('tabindex', '-1');
+    row.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2 2h9v11H3V7Z"/></svg><span>Workspace</span><svg class="gemini-workspace-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+    menu.append(row);
+  }
   function mark(element, attribute, value = '') {
     if (element && element.getAttribute(attribute) !== value) element.setAttribute(attribute, value);
   }
@@ -95,10 +183,20 @@
     const container = input.closest('[id="antigravity.agentSidePanelInputBox"]');
     const surface = [...(container?.children || [])].find(element => element.contains(input));
     mark(surface, 'data-gemini-composer-surface');
+    const navigation = [...document.querySelectorAll('[data-gemini-nav-tools]')].find(element => !element.closest('[data-aux-pane-open]'));
+    const titleBar = document.querySelector('[data-testid="title-menu-bar"]');
+    const boundary = Math.max(navigation?.getBoundingClientRect().bottom || 0, titleBar?.getBoundingClientRect().bottom || 0);
+    const available = Math.max(96, Math.min(360, Math.floor((surface?.getBoundingClientRect().top || 0) - boundary - 12)));
+    for (const menu of document.querySelectorAll('[data-mention-menu], [data-command-menu]')) {
+      if (menu.style.getPropertyValue('--gemini-typeahead-height') !== available + 'px') menu.style.setProperty('--gemini-typeahead-height', available + 'px');
+    }
     mark([...(surface?.children || [])].find(element => element.contains(input)), 'data-gemini-composer-editor');
     const controls = [...(surface?.children || [])].find(element => element.querySelector('[aria-label="Add context"]'));
     mark(controls, 'data-gemini-composer-controls');
     mark(controls?.querySelector('[aria-label="Add context"]')?.parentElement, 'data-gemini-context-cluster');
+    const project = document.querySelector('[data-testid="project-selector-trigger"]')?.closest('.relative.w-full');
+    const environment = document.querySelector('[aria-label="Select Environment"]')?.parentElement?.parentElement;
+    annotateWorkspace(controls?.querySelector('[aria-label="Add context"]'), project, environment);
     const placeholder = input.nextElementSibling;
     if (placeholder?.tagName === 'P' && placeholder.textContent !== 'Ask Antigravity') {
       mark(input, 'title', 'Ask Antigravity. Use @ to mention context or / for actions.');
@@ -144,7 +242,42 @@
   }
   function start() {
     annotate();
-    new MutationObserver(schedule).observe(document.documentElement, {childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class']});
+    new MutationObserver(schedule).observe(document.documentElement, {childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class', 'aria-expanded', 'aria-controls', 'aria-label', 'data-active-tab-id']});
+    const handleWorkspaceClick = event => {
+      if (!event.target.closest('.gemini-workspace-menu-item')) return;
+      event.preventDefault(); event.stopPropagation(); openWorkspace();
+    };
+    // Register at the document boundary so the native menu retains its own handlers.
+    const handleWorkspaceKeys = event => {
+      const menu = document.querySelector('[data-gemini-context-menu]');
+      const row = menu?.querySelector('.gemini-workspace-menu-item');
+      if (!row || !menu.contains(document.activeElement)) return;
+      const items = [...menu.querySelectorAll('[role="menuitem"]')].filter(item => item !== row && !item.hasAttribute('data-disabled'));
+      const active = document.activeElement;
+      if (event.key === 'End' || event.key === 'ArrowDown' && active === items.at(-1) || event.key === 'ArrowUp' && active === items[0]) {
+        event.preventDefault(); event.stopPropagation(); row.focus();
+      } else if (active === row && ['ArrowUp', 'ArrowDown', 'Home', 'Enter', ' '].includes(event.key)) {
+        event.preventDefault(); event.stopPropagation();
+        if (event.key === 'Enter' || event.key === ' ') openWorkspace();
+        else (event.key === 'ArrowUp' ? items.at(-1) : items[0])?.focus();
+      }
+    };
+    globalThis.__geminiWorkspaceEvents = {click: handleWorkspaceClick, keydown: handleWorkspaceKeys};
+    if (!globalThis.__geminiWorkspaceEventsBound) {
+      globalThis.__geminiWorkspaceEventsBound = true;
+      addEventListener('click', event => globalThis.__geminiWorkspaceEvents.click(event), true);
+      addEventListener('keydown', event => globalThis.__geminiWorkspaceEvents.keydown(event), true);
+    }
+    document.addEventListener('pointerdown', event => {
+      if (!workspace.open || event.target.closest('.gemini-workspace-panel, [data-gemini-workspace-project], [data-gemini-workspace-environment], [role="menu"], [role="dialog"]')) return;
+      closeWorkspace();
+    }, true);
+    document.addEventListener('keydown', event => {
+      if (!workspace.open || event.key !== 'Escape') return;
+      if (workspace.project?.querySelector('[aria-expanded="true"]') || workspace.environment?.querySelector('[aria-expanded="true"]')) return;
+      event.preventDefault(); closeWorkspace(true);
+    });
+    addEventListener('resize', () => { positionWorkspace(); schedule(); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once: true});
   else start();

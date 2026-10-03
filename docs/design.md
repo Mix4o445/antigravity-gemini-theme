@@ -23,4 +23,8 @@ The compact model label retains the full native accessible label and tooltip. Th
 
 The theme annotates existing DOM nodes, adds a stylesheet, a greeting, a brand label, model descriptions, and the small AI notice. A newly rendered running-task panel starts collapsed using its native disclosure button. It does not alter requests, authentication, files, model routing, or terminal execution.
 
-The README images are captures of the actual themed Antigravity 2.19.1 app, including its native model picker. The navigation sidebar is collapsed and the project selector is hidden during capture to protect private project details. No sample conversations or replacement controls are rendered for the screenshots.
+Project and environment selectors appear in **+ → Workspace**, using the original native buttons in their existing React DOM positions. The nonmodal settings group closes with Escape or its close button. A delegated keyboard handler includes Workspace in the native context menu's arrow-key cycle.
+
+Native `/` and `@` suggestions use 20px corners, 48px rows, 16px labels, and 14px descriptions. The scroll limit comes from the actual gap between the composer and header, preserving the complete upper edge in wide and narrow windows.
+
+The README images are captures of the actual themed Antigravity 2.19.1 app, including its native model picker, actions, and mentions. The navigation sidebar is collapsed during capture to protect private project details. No sample conversations or replacement controls are rendered for the screenshots.

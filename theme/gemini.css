@@ -74,6 +74,43 @@ body { background: #101010 !important; }
 [data-gemini-home] [data-gemini-composer-column] { max-width: 720px !important; }
 [data-testid="project-selector-trigger"] { color: #c4c7c5 !important; font-size: 13px; }
 [data-gemini-home] [data-testid="project-selector-trigger"] { margin-bottom: 5px; }
+/* Keep coding settings behind + > Workspace, using the original native controls. */
+[data-gemini-workspace-project], [data-gemini-workspace-environment] { display: none !important; }
+[data-gemini-runtime-footer] { display: contents; }
+[data-gemini-runtime-footer] > div { padding: 0 !important; min-height: 0; }
+[data-gemini-runtime-footer] > div > div:empty { display: none; }
+[data-gemini-workspace-open] [data-gemini-workspace-project],
+[data-gemini-workspace-open] [data-gemini-workspace-environment] { display: flex !important; position: fixed !important; left: calc(var(--gemini-workspace-left) + 12px); width: calc(var(--gemini-workspace-width) - 24px) !important; z-index: 1002; margin: 0 !important; }
+[data-gemini-workspace-open] [data-gemini-workspace-project] { top: calc(var(--gemini-workspace-top) + 46px); }
+[data-gemini-workspace-open] [data-gemini-workspace-environment] { top: calc(var(--gemini-workspace-top) + 98px); }
+[data-gemini-workspace-open="environment"] [data-gemini-workspace-environment] { top: calc(var(--gemini-workspace-top) + 46px); }
+[data-gemini-workspace-open] [data-testid="project-selector-trigger"],
+[data-gemini-workspace-open] [aria-label="Select Environment"] { min-height: 44px; width: 100% !important; max-width: 100% !important; justify-content: flex-start; padding: 10px 12px !important; gap: 12px !important; border-radius: 12px; background: transparent; color: #e3e3e3 !important; font-size: 16px !important; }
+[data-gemini-workspace-open] [data-testid="project-selector-trigger"] > svg:last-child,
+[data-gemini-workspace-open] [aria-label="Select Environment"] > svg:last-child { margin-left: auto; }
+[data-gemini-workspace-open] [data-testid="project-selector-trigger"] > svg:first-child,
+[data-gemini-workspace-open] [aria-label="Select Environment"] > svg:first-child { width: 20px; height: 20px; }
+.gemini-workspace-panel { position: fixed; left: var(--gemini-workspace-left); top: var(--gemini-workspace-top); width: var(--gemini-workspace-width); height: var(--gemini-workspace-height); padding: 16px 24px; border-radius: 20px; background: #202020; color: #b6b8bc; font-size: 14px; box-shadow: 0 8px 30px #0006; z-index: 1; }
+.gemini-workspace-close { position: absolute; right: 10px; top: 8px; width: 32px; height: 32px; padding: 6px; border-radius: 50%; color: #c4c7c5; }
+.gemini-workspace-close:hover { background: #303134; }
+.gemini-workspace-close svg, .gemini-workspace-menu-item svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+[data-gemini-context-menu] { min-width: 260px; }
+[data-gemini-context-menu] [role="presentation"] { padding: 8px 16px; font-size: 13px; color: #b6b8bc; }
+[data-gemini-context-menu] [role="menuitem"] { min-height: 48px; padding: 12px 16px !important; gap: 14px !important; font-size: 16px !important; }
+[data-gemini-context-menu] [role="menuitem"] > svg { width: 20px !important; height: 20px !important; }
+.gemini-workspace-menu-item { display: flex; align-items: center; width: 100%; border: 0; border-top: 1px solid #3c4043; margin-top: 8px; background: transparent; color: #e3e3e3; cursor: pointer; text-align: left; }
+.gemini-workspace-menu-item:hover, .gemini-workspace-menu-item:focus { background: #303134; }
+.gemini-workspace-chevron { margin-left: auto; }
+/* Native @ and / suggestions share the model menu's readable row rhythm. */
+[data-mention-menu], [data-command-menu], [role="listbox"][aria-label="Actions"], [role="listbox"][aria-label="Commands"] { border: 0 !important; border-radius: 20px !important; background: #202020 !important; box-shadow: 0 8px 30px #0006 !important; margin-bottom: 12px !important; max-height: var(--gemini-typeahead-height, min(360px, calc(100dvh - 160px))); overflow: hidden; }
+[data-mention-menu] > div, [data-command-menu] > div { padding: 8px !important; max-height: calc(var(--gemini-typeahead-height, min(360px, calc(100dvh - 160px))) - 16px) !important; }
+[data-mention-menu] [role="option"], [data-command-menu] [role="option"] { border-radius: 12px; overflow: hidden; }
+[data-mention-menu] [role="option"] > div, [data-command-menu] [role="option"] > div { min-height: 48px; padding: 12px 16px !important; gap: 14px !important; border-radius: 12px; }
+[data-mention-menu] [role="option"][aria-selected="true"] > div, [data-command-menu] [role="option"][aria-selected="true"] > div { background: #303134 !important; }
+[data-mention-menu] [role="option"]:hover > div, [data-command-menu] [role="option"]:hover > div { background: #303134 !important; }
+[data-mention-menu] [role="option"] svg, [data-command-menu] [role="option"] svg { width: 20px; height: 20px; }
+[data-mention-menu] [data-testid="menu-option-label"], [data-command-menu] [data-testid="menu-option-label"] { font-size: 16px !important; line-height: 24px; color: #e3e3e3; }
+[data-mention-menu] [data-testid="menu-option-description"], [data-command-menu] [data-testid="menu-option-description"] { font-size: 14px !important; line-height: 20px; color: #b6b8bc !important; opacity: 1 !important; }
 [id="antigravity.agentSidePanelInputBox"] { border-radius: 32px !important; background: transparent !important; padding: 0 !important; }
 [data-gemini-composer-surface] { display: flex !important; flex-direction: row !important; align-items: center; min-height: 70px; gap: 4px !important; padding: 12px 20px !important; background: #202020 !important; border-radius: 36px !important; }
 [data-testid="agent-input-box"] > div:first-child:empty { display: none; }
